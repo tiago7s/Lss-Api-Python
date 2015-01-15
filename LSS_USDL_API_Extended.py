@@ -2,7 +2,6 @@ __author__ = 'tiagosalvador'
 
 from rdflib import Graph, RDF, URIRef, RDFS  # , Literal, BNode
 from SPARQLWrapper import SPARQLWrapper, JSON
-import sys, getopt
 
 
 class ServiceSystem:
@@ -71,12 +70,12 @@ class ServiceSystem:
     # print "--- Interaction Points: ---"
     # for sub, obj in ServiceSystem.g.subject_objects(URIRef("http://w3id.org/lss-usdl/v2#hasInteraction")):
     # interaction = obj.rsplit("#", 2)[1]
-    #          print interaction
+    # print interaction
 
 
-    #------------------------------------------------------------------
-    #-------------- Connectors ----------------------------------------
-    #------------------------------------------------------------------
+    # ------------------------------------------------------------------
+    # -------------- Connectors ----------------------------------------
+    # ------------------------------------------------------------------
     def getConnectors(self):
         qres = ServiceSystem.g.query(
             """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
@@ -95,14 +94,14 @@ class ServiceSystem:
             target = tgt.rsplit("#", 2)[1]
             condition = cond
             results.append([source, target, condition])
-            #str = 'ControlFlow (' + source + ' -> ' + target + ') with condition "' + condition + '"'''
-            #print str
+            # str = 'ControlFlow (' + source + ' -> ' + target + ') with condition "' + condition + '"'''
+            # print str
 
         return results
 
 
-    #------------------------------------------------------------------
-    #-------------- Get Service Roles ---------------------------------
+    # ------------------------------------------------------------------
+    # -------------- Get Service Roles ---------------------------------
     #------------------------------------------------------------------
     def getRoles(self):
         qres = ServiceSystem.g.query(
@@ -438,6 +437,26 @@ class ServiceSystem:
 
         return results
 
+    def getInteractionsArray(self):
+        qres = ServiceSystem.g.query(
+            """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT DISTINCT ?int ?label ?comment ?type
+                WHERE {
+                  ?service lss-usdl:hasInteraction ?int .
+                  ?int rdfs:label ?label .
+                  ?int rdfs:comment ?comment .
+                  ?int a ?type .
+                }""")
+
+        results = []
+        for row in qres:
+            i, label, comment, type = row
+            interaction = i.rsplit("#", 2)[1]
+            results.append([interaction, label, comment, type])
+
+        return results
+
 # ------------------------------------------------------------------
 # -------------- parse command line  -------------------------------
 # ------------------------------------------------------------------
@@ -457,7 +476,9 @@ if __name__ == "__main__":
         elif opt in ("-f", "--file"):
             inputfile = arg"""
 
-    listOfFiles = ["../TurtleServices/ITIL_Service_Catalogue_service.ttl"]
+    listOfFiles = [
+        "../../../../Users/tiagosalvador/Documents/University/GSI_Project_TiagoSalvador"
+        + "/TurtleServices/ITIL_Service_Catalogue_service.ttl"]
 
     for inputfile in listOfFiles:
 
@@ -583,6 +604,14 @@ if __name__ == "__main__":
         for process in results:
             dataExtracted += "process: " + process[0] + "\n\t --> label: " + process[1] + "\n\t ; comment: " + process[
                 2] + "\n\t ; type of process: " + process[3]
+            dataExtracted += "\n"
+        dataExtracted += "\n"
+
+        results = ss.getInteractionsArray()
+        dataExtracted += "\n==================\ngetProcessesArray:\n"
+        for interaction in results:
+            dataExtracted += "interaction: " + interaction[0] + "\n\t --> label: " + interaction[
+                1] + "\n\t ; comment: " + interaction[2] + "\n\t ; type of interaction: " + interaction[3]
             dataExtracted += "\n"
         dataExtracted += "\n"
 
