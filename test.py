@@ -159,6 +159,20 @@ if __name__ == "__main__":
             dataExtracted += "\n"
         dataExtracted += "\n"
 
+        results = ss.getGenericAnnotationsArray()
+        dataExtracted += "\n==================\ngetGenericAnnotationsArray:\n"
+        for annotation in results:
+            dataExtracted += "annotation: " + annotation[0] + "\n\t ; concept: " + annotation[1]
+            dataExtracted += "\n"
+        dataExtracted += "\n"
+
+        results = ss.getItilAnnotationsArray()
+        dataExtracted += "\n==================\ngetItilAnnotationsArray:\n"
+        for annotation in results:
+            dataExtracted += "annotation: " + annotation[0] + "\n\t ; concept: " + annotation[1]
+            dataExtracted += "\n"
+        dataExtracted += "\n"
+
         print dataExtracted
 
         fileName = inputfile + "_Results.txt"

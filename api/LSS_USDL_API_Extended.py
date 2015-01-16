@@ -292,7 +292,9 @@ class ServiceSystem:
 
         return results
 
-
+    # ------------------------------------------------------------------
+    #-------------- get Locations -------------------------------------
+    #------------------------------------------------------------------
     def getLocationsArray(self):
         qres = ServiceSystem.g.query(
             """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
@@ -311,6 +313,9 @@ class ServiceSystem:
 
         return results
 
+    # ------------------------------------------------------------------
+    #-------------- get Goals -----------------------------------------
+    #------------------------------------------------------------------
     def getGoalsArray(self):
         qres = ServiceSystem.g.query(
             """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
@@ -333,6 +338,9 @@ class ServiceSystem:
 
         return results
 
+    # ------------------------------------------------------------------
+    #-------------- get Roles -----------------------------------------
+    #------------------------------------------------------------------
     def getRolesArray(self):
         qres = ServiceSystem.g.query(
             """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
@@ -357,6 +365,9 @@ class ServiceSystem:
 
         return results
 
+    # ------------------------------------------------------------------
+    #-------------- get all resources ---------------------------------
+    #------------------------------------------------------------------
     def getResourcesArray(self):
         qres = ServiceSystem.g.query(
             """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
@@ -381,6 +392,9 @@ class ServiceSystem:
 
         return results
 
+    # ------------------------------------------------------------------
+    #-------------- get Times -----------------------------------------
+    #------------------------------------------------------------------
     def getTimesArray(self):
         qres = ServiceSystem.g.query(
             """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
@@ -416,6 +430,9 @@ class ServiceSystem:
 
         return results
 
+    # ------------------------------------------------------------------
+    #-------------- get Processes -------------------------------------
+    #------------------------------------------------------------------
     def getProcessesArray(self):
         qres = ServiceSystem.g.query(
             """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
@@ -437,6 +454,9 @@ class ServiceSystem:
 
         return results
 
+    # ------------------------------------------------------------------
+    #-------------- get Interactions ----------------------------------
+    #------------------------------------------------------------------
     def getInteractionsArray(self):
         qres = ServiceSystem.g.query(
             """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
@@ -456,3 +476,75 @@ class ServiceSystem:
             results.append([interaction, label, comment, type])
 
         return results
+
+    # ------------------------------------------------------------------
+    #-------------- get Interactions not connected --------------------
+    #-------------- to main service system ----------------------------
+    #------------------------------------------------------------------
+    def getInteractionsNotConnectedToMainServiceSystemArray(self):
+        qres = ServiceSystem.g.query(
+            """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT DISTINCT ?int ?label ?comment ?type
+                WHERE {
+                  ?service lss-usdl:hasInteraction ?int .
+                  ?int rdfs:label ?label .
+                  ?int rdfs:comment ?comment .
+                  ?int a ?type .
+                }""")
+
+        results = []
+        for row in qres:
+            i, label, comment, type = row
+            interaction = i.rsplit("#", 2)[1]
+            results.append([interaction, label, comment, type])
+
+        return results
+
+    def getGenericAnnotationsArray(self):
+        qres = ServiceSystem.g.query(
+            """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX dbpedia: <http://dbpedia.org/#>
+            PREFIX dbpediar: <http://dbpedia.org/resource/>
+                SELECT DISTINCT ?annot ?concept
+                WHERE {
+                  {?annot a ?concept FILTER regex(str(?concept), "http://dbpedia.org/resource/", "i")} UNION
+                  {?annot a ?concept FILTER regex(str(?concept), "http://dbpedia.org/", "i")} UNION
+                  {?loc lss-usdl:isLocationFrom ?annot}
+                }""")
+
+        results = []
+        for row in qres:
+            annot, cp = row
+            concept = "none"
+            if cp is not None:
+                concept = cp
+            results.append([annot, concept])
+
+        return results
+
+    def getItilAnnotationsArray(self):
+        qres = ServiceSystem.g.query(
+            """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX itilrole: <https://w3id.org/itil/roles#>
+            PREFIX itilproc: <https://w3id.org/itil/processes#>
+                SELECT DISTINCT ?annot ?concept
+                WHERE {
+                  {?annot a ?concept FILTER regex(str(?concept), "https://w3id.org/itil/roles", "i")} UNION
+                  {?annot a ?concept FILTER regex(str(?concept), "https://w3id.org/itil/processes", "i")} UNION
+                  {?annot a ?concept FILTER regex(str(?concept), "https://w3id.org/itil/glossary", "i")}
+                }""")
+
+        results = []
+        for row in qres:
+            annot, cp = row
+            concept = "none"
+            annotation = annot.rsplit("#", 2)[1]
+            if cp is not None:
+                concept = cp
+            results.append([annotation, concept])
+
+        return results
+
