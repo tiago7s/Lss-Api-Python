@@ -548,3 +548,85 @@ class ServiceSystem:
 
         return results
 
+    def getNewAnnotationsArray(self):
+        qres = ServiceSystem.g.query(
+            """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT DISTINCT ?concept
+                WHERE {
+                  ?annot a ?concept
+                }""")
+
+        results = []
+        for row in qres:
+            concept = getattr(row, "concept")
+            results.append(concept)
+
+        return results
+
+    def getSixStarArray(self):
+        qres = ServiceSystem.g.query(
+            """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                SELECT DISTINCT ?comment ?concept
+                WHERE {
+                  ?concept rdfs:comment ?comment
+                }""")
+
+        results = []
+        for row in qres:
+            c, comment = row
+            results.append([c, comment])
+
+        return results
+
+    def getSeeAlsoArray(self):
+        qres = ServiceSystem.g.query(
+            """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX owl: <http://www.w3.org/2002/07/owl#>
+                SELECT DISTINCT ?concept
+                WHERE {
+                  ?concept owl:seeAlso ?something
+                }""")
+
+        results = []
+        for row in qres:
+            concept = getattr(row, "concept")
+            results.append(concept)
+
+        return results
+
+    def getSameAsArray(self):
+        qres = ServiceSystem.g.query(
+            """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX owl: <http://www.w3.org/2002/07/owl#>
+                SELECT DISTINCT ?concept
+                WHERE {
+                  ?concept owl:sameAs ?something
+                }""")
+
+        results = []
+        for row in qres:
+            concept = getattr(row, "concept")
+            results.append(concept)
+
+        return results
+
+    def getSubClassOfArray(self):
+        qres = ServiceSystem.g.query(
+            """PREFIX  lss-usdl:  <http://w3id.org/lss-usdl/v2#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX owl: <http://www.w3.org/2002/07/owl#>
+                SELECT DISTINCT ?concept
+                WHERE {
+                  ?concept owl:subClassOf ?something
+                }""")
+
+        results = []
+        for row in qres:
+            concept = getattr(row, "concept")
+            results.append(concept)
+
+        return results

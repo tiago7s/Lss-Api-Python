@@ -173,6 +173,41 @@ if __name__ == "__main__":
             dataExtracted += "\n"
         dataExtracted += "\n"
 
+        results = ss.getNewAnnotationsArray()
+        dataExtracted += "\n==================\ngetNewAnnotationsArray:\n"
+        for annotation in results:
+            dataExtracted += "concept: " + annotation
+            dataExtracted += "\n"
+        dataExtracted += "\n"
+
+        results = ss.getSixStarArray()
+        dataExtracted += "\n==================\ngetSixStarArray:\n"
+        for annotation in results:
+            dataExtracted += "comment: " + annotation[0] + "\n\t ; belongs to: " + annotation[1]
+            dataExtracted += "\n"
+        dataExtracted += "\n"
+
+        results = ss.getSeeAlsoArray()
+        dataExtracted += "\n==================\ngetSeeAlsoArray:\n"
+        for annotation in results:
+            dataExtracted += "annotation: " + annotation
+            dataExtracted += "\n"
+        dataExtracted += "\n"
+
+        results = ss.getSameAsArray()
+        dataExtracted += "\n==================\ngetSameAsArray:\n"
+        for annotation in results:
+            dataExtracted += "annotation: " + annotation
+            dataExtracted += "\n"
+        dataExtracted += "\n"
+
+        results = ss.getSubClassOfArray()
+        dataExtracted += "\n==================\ngetSubClassOfArray:\n"
+        for annotation in results:
+            dataExtracted += "annotation: " + annotation
+            dataExtracted += "\n"
+        dataExtracted += "\n"
+
         print dataExtracted
 
         fileName = inputfile + "_Results.txt"
